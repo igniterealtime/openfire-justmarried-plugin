@@ -10,11 +10,12 @@
     webManager.init(request, response, session, application, out);
     String oldName = request.getParameter("oldName");
     String newName = request.getParameter("newName");
+    String newPassword = request.getParameter("newPassword");
     String keepCopy = request.getParameter("copy");
     String newEmail = request.getParameter("email");
     String newRealName = request.getParameter("realName");
 
-    final boolean supported = AuthFactory.supportsPasswordRetrieval() && !UserManager.getUserPropertyProvider().isReadOnly();
+    final boolean supported = !UserManager.getUserPropertyProvider().isReadOnly();
 %>
 
 <html>
@@ -35,7 +36,7 @@
             <tr>
                 <td class="jive-icon"><img src="/images/warning-16x16.gif" alt=""/></td>
                 <td class="jive-icon-label">
-                    This instance of Openfire does not support this feature.
+                    This instance of Openfire does not support this feature, as its user-base is 'read-only' (likely due to being obtained from a remote directory service).
                 </td>
             </tr>
             </tbody>
@@ -48,7 +49,7 @@
     <div class="jive-contentBox">
         <%
             if (oldName != null && newName != null && oldName.trim().length() > 0 && newName.trim().length() > 0) {
-                boolean success = JustMarriedPlugin.changeName(oldName, newName, keepCopy == null ? true : false, newEmail, newRealName);
+                boolean success = JustMarriedPlugin.changeName(oldName, newName, keepCopy == null ? true : false, newEmail, newRealName, newPassword);
                 if (success) {
                     out.write("<div class=\"success\">Successfully renamed user " + oldName + " to " + newName
                             + "!</div>");
@@ -77,9 +78,19 @@
                     <input type="text" name="newName" style="height:26px"
                         class="input-xlarge"
                         <%out.write(newName != null && newName.length() == 0 ? "id=\"inputError\"" : "id=\"input01\"");%> <%=supported?"":"disabled"%> required>
-                    <p class="help-block">The new username e.g user.newname
+                    <p class="help-block">The new username e.g. user.newname
                         (without server)</p>
                 </div>
+                <label class="control-label" for="input01">New Password<%=AuthFactory.supportsPasswordRetrieval()?"":"*"%></label>
+                <div
+                    <%out.write(newName != null && newName.length() == 0 ? "class=\"control-group error\""
+                        : "class=\"controls\"");%>>
+                    <input type="password" name="newPassword" style="height:26px"
+                           class="input-xlarge"
+                        <%out.write(newName != null && newName.length() == 0 ? "id=\"inputError\"" : "id=\"input01\"");%> <%=supported?"":"disabled"%> <%=AuthFactory.supportsPasswordRetrieval()?"":"required"%>>
+                    <p class="help-block">The new password for this user. <%=AuthFactory.supportsPasswordRetrieval()?"Leave empty to keep the old password.":""%></p>
+                </div>
+
                 <label class="control-label" for="input01">New E-Mail address</label>
                 <div class="controls">
                     <input type="text" name="email" style="height:26px"
