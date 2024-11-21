@@ -5,7 +5,7 @@
    <description>Allows admins to rename or copy users</description>
    <author>Holger Bergunde</author>
     <version>${project.version}</version>
-    <date>2024-11-20</date>
+    <date>2024-11-21</date>
     <minServerVersion>4.6.0</minServerVersion>
    
    <adminconsole>
